@@ -7,31 +7,39 @@ import smtplib
     # password = <yourAccountPassword>                 #
     ####################################################
 import myAccount # importing myAccount.py file.
-url = input("Product URL : ")
-des_price = int(input("Desired price : "))
-headers = {
-    "User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
-}
 
 def check_price():
-    res = requests.get(url)
-    webContent = res.text
-    soup = bs4.BeautifulSoup(webContent,'lxml')
-    item = soup.find(id="productTitle").getText()
-    item = item.strip()
-    price = soup.find(id="priceblock_ourprice").getText()
-    price = str(price.encode('utf8'))
-    price = price[22:]
-    price = float(price[:6])
-    print('Item :' , item)
-    print('Price :' , price)
-    if(price < des_price):
-        print("Desired price is less than" , price)
-        res = input("Do you want to mail information (y/n)"))
-        if(res == 'y' || res == 'Y'):
-            send_mail()
+    try:
+        print("getting data please wait...")
+        res = requests.get(url)
+        webContent = res.text
+        soup = bs4.BeautifulSoup(webContent,'lxml')
+        item = soup.find(id="productTitle").getText()
+        item = item.strip()
+        price = soup.find(id="priceblock_ourprice").getText()
+        price = str(price.encode('utf8'))
+        price = price[22:]
+        price = float(price[:6])
+        print('Item :' , item)
+        print('Price :' , price)
+        if(price < des_price):
+            print("Desired price is less than :)" , price)
+            res = input("Do you want to mail information (y/n)")
+            if(res == 'y' or res == 'Y'):
+                send_mail()
+            else:
+                print('Okay... email service ignored')
         else:
-            print('Okay... email service ignored')
+            print("Price is higher... :(")
+    except:
+        print("Somethig went wrong...")
+        res = input("Do you want to try again? (y/n) : ")
+        if(res == 'y' or res == 'Y'):
+            check_price()
+        else:
+            print("okay...")
+
+
 
 def send_mail():
     to_mailaddress = input("e-mail address of recipient : ")
@@ -45,7 +53,7 @@ def send_mail():
     print("Connection established")
     print("writing message...")
     subject = 'Test Email from python'
-    body = 'Hi, this is a test run...'
+    body = 'Hi, price has droped! Checkout ' + url
     message  = """ Subject: %s \n\n %s """ % (subject , body)
     print("Sending e-mail to ",to_mailaddress)
     server.sendmail(
@@ -53,7 +61,12 @@ def send_mail():
         to_mailaddress,
         message
     )
-    print('Sucess!')
+    print('Success!')
     server.quit()
 
+url = input("Product URL : ")
+des_price = int(input("Desired price : "))
+headers = {
+    "User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
+}
 check_price()
