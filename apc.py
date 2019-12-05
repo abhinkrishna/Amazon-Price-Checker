@@ -31,8 +31,8 @@ def check_price():
                 print('Okay... email service ignored')
         else:
             print("Price is higher... :(")
-    except:
-        print("Somethig went wrong...")
+    except Exception as e:
+        print("Somethig went wrong..." + str(e))
         res = input("Do you want to try again? (y/n) : ")
         if(res == 'y' or res == 'Y'):
             check_price()
@@ -70,3 +70,4 @@ headers = {
     "User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
 }
 check_price()
+input()
